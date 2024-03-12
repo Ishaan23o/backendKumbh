@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "prime-mechanic-413516",
+  "private_key_id": "e0c82046992fe1e152ec111e524de4e67a02e8ea",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDGEGS7MwLZb2pb\nI/s4bXek7V75VwFUo2Hb5h4hGp/JwCcMj+h832zfZlihz/4Wg2Y9d+6Nch+kqnAD\nXYT2rwM0LvvwfqroFwj8N0W7LW3Z+nQm16/Gx+oyXbPJ6bDWnMXU9FZMlv2wOu1k\ncivThVi/9VjmgYnBYb1c4W5W3elsLYSjSoaGZfRGkh1tPAiX4Izpe7EVXzfpZFOY\nn9VBzgRpBl+lYnXB1M4E2E/Fk/yO5E1NAP1ATnXUcoZbINi8zNgyykMm0hRDuJsu\nhHHe05aJMtSkHG/PsPKzf8ge8zlBw1DyIE7g9RF878bSvTQBf3zzP40jQMGCwb9t\nyWMPbmSFAgMBAAECggEAYLTaaijDCGWFGZEc9XVFiMq5p6baqHfJrTPTnDhCsqBW\nsKSHUIlKwF1Zg1Bp8JYh0nt/h6KkXqM1Y/9Cj6vuNYmHS+qdCgtNQNDABF9vFpJa\nKij/02ADMqpbwYeP54nOcmcGyAilP2nWRUgVrAacycVCrfGr0Dcn3XTYiiN5+G35\nQ5+lwLGcXcBLmfyez6kMSQeliPEZwhyDTvWM+lqrhR4yt/gFB9IJIkFgLX43Dn9O\nTYmYhdd4P6b0h3BpaF7fHiyEjIpK+/+XSz2u8Pv9b+dC0Ci0FgNq62cbD9E2qo/M\nnjvh0U3xtFz7ylIvVJVMwSJmiBWPWdkRA4g+a5O1dQKBgQDh5QwzQnI2UNlwkZTN\nSB3lZNOXxHHsYDSKBBEMGOvu8Fv+m2iHu6TUGXV0mauO5P8kwejFwnD+74BJPA2f\ng7x017vforCFgas9lw4eFgm0TtfNqMqzx4U12SqwHZqIYcIYcYgKSItx+Pa/5MEE\n5gmLDRX1yCTRa0aSSJubT+lfmwKBgQDgddV6na4VV/uwxJQpJAg5mBkIrcv36mM1\nrQgaIYiiU1CLqbgo5Ct48/+T27v5fowBU85BBDaeVabya35zvQzGra197rg8+Bjo\nWW2vgHmS5fiqnY9qGocDWj19Q9mu3maniZtpYQddLMvplRAA4Cx/+uPOxxqQ+0LM\nuK906jteXwKBgGK9wzp41gHGD3X0PO4Kkv7dttwFQ6MGXpDhvC3kiuTz7dJ6ThPe\nwurvgfcI4QPiN2Dy3fPrzYayXAonFPFgHTWZw4a6z5xcFOUkLUiba3yEZjKAkLJL\nCYCDP/ShzBXHXZdfsQ6FrWaRZBJ3RKQGha9hdfLsnKNp1/xDfrlCEgn3AoGAX05J\nJbYb+54PFYBydIGDKIlHX+MDrzGLjHf677V7YYlEsviOZHZ1avcXdv2e9BHiepHO\nCtcyJcqyh05TM+t6qEWIW+dnvSOO1+FY7GL9u/z/t9oM0f2PhEHlx/FuVYzDQ7Hv\nFjCHwu1Ja9XKJMUKwBCUd/Ece6DkPS7R+S+Xo7sCgYEAkHPuaUoNP2gPzrpdjaHy\nuObtLK3sTWikD5XPlvdJMmxxSWmkjQKTbEXeit2fYfdSh8ctCa9RqQiozST5xN6Y\nF3sH2I78k24B61ILM8N/LVlAG5Em7l0b3Gt6t/ZAUuDVchx3VD2y7QCUSI98IxwI\nmZGPCLXu+G7XSL6iPPzX3zY=\n-----END PRIVATE KEY-----\n",
+  "client_email": "pubsub@prime-mechanic-413516.iam.gserviceaccount.com",
+  "client_id": "112519834075203627755",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/pubsub%40prime-mechanic-413516.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
