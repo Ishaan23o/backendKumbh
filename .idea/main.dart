@@ -41,7 +41,7 @@ final func=()async{
   final result=await Future.wait(sizes);
   final result2=result.asMap().entries.map((entry)=>{
     'location':locations[entry.key],
-    'crown':entry.value
+    'crowd':entry.value
   }).toList();
   print(result2);
   return result2;
@@ -64,8 +64,8 @@ final accumulateData=()async{
     String time = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
     String day = daysOfWeek[now.weekday - 1];
     final dio=Dio();
-    calls=data.map((element)=>{...element,'day':day,'time':time});
-    posts=calls.map((element)=>dio.post('http://localhost:5000/userData',data:element));
+    final calls=data.map((element)=>{...element,'day':day,'time':time});
+    final posts=calls.map((element)=>dio.post('http://localhost:5000/userData',data:element));
     await Future.wait(posts);
     await Future.delayed(Duration(minutes:5));
   }
