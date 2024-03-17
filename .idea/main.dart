@@ -15,6 +15,7 @@ import 'dart:typed_data';
 import './controllers/firestoreHandler.dart';
 import './controllers/resolver.dart';
 import './controllers/admin.dart';
+import './controllers/stats.dart';
 
 shelf.Handler _corsHandler(shelf.Handler handler) {
   return (shelf.Request request) async {
@@ -58,7 +59,7 @@ final accumulateData=()async{
     'Sunday'
   ];
   while(true){
-    //[TODO] Send result2 to the python server
+    /*
     final data=await func();
     DateTime now = DateTime.now();
     String time = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
@@ -67,6 +68,7 @@ final accumulateData=()async{
     final calls=data.map((element)=>{...element,'day':day,'time':time});
     final posts=calls.map((element)=>dio.post('http://localhost:5000/userData',data:element));
     await Future.wait(posts);
+     */
     await Future.delayed(Duration(minutes:5));
   }
 };
@@ -89,8 +91,11 @@ void main() async {
   app.post('/locationDensity',locationDensity);
   app.post('/inbound',inbound);
   app.post('/notification',sendNotification);
+  app.post('/viewComplaintsAdmin',viewComplaintsByAdmin);
   app.post('/resolveComplaint', resolveComplaint);
   app.get('/viewComplaintsUser', viewComplaintsByUser);
+  app.get('/viewComplaintsUserResolved', viewComplaintsByUserResolved);
+  app.get('/viewComplaintsUserUnResolved', viewComplaintsByUserUnResolved);
   app.get('/viewComplaintsLocation',viewComplaintsByLocation);
   app.get('/viewComplaintsResolved',viewComplaintsForResolverResolved);
   app.get('/viewComplaintsUnresolved',viewComplaintsForResolverUnResolved);
@@ -102,6 +107,9 @@ void main() async {
   app.post('/changeResolver',changeResolver);//[TODO] change resolver to another location (or deallocate)
   app.post('/requestResolver',requestResolver); //[TODO]  change resolver's requested location
   app.post('/locationupdate',locationPing);
+  app.post('/getStats',getStats);
+  app.post('/getTotalStats',getTotalStats);
+  app.post('/predictionsML',predictionsML);
   accumulateData();
   var handler = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())

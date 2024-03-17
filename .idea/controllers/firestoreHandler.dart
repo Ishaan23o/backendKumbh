@@ -1,4 +1,6 @@
 import 'package:firedart/firedart.dart';
+import 'package:cached/cached.dart';
+import 'package:cached_annotation/cached_annotation.dart';
 
 //
 final addDocument = (String col, Map<String, dynamic> data) async {
@@ -36,6 +38,23 @@ final findDocuments=(String col,String property,dynamic value)async{
       .get();
   return query;
 };
+
+@Cached(
+    ttl: 60*60
+)
+final findComplaintsLastWeek=(String location,String category)async{
+  var query = await Firestore.instance.collection('complaints').where('place',isEqualTo: location).where('category',isEqualTo: category).where('time',isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days:7)).millisecondsSinceEpoch).get();
+  return query;
+};
+
+@Cached(
+    ttl: 60*60
+)
+final findComplaintsLastWeekAll=()async{
+  var query = await Firestore.instance.collection('complaints').where('time',isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days:7)).millisecondsSinceEpoch).get();
+  return query;
+};
+
 
 //Find document using one property
 final findAllDocuments=(String col)async{

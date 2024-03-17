@@ -6,6 +6,7 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:firedart/firedart.dart';
 import './firestoreHandler.dart';
 import './redis.dart';
+import 'chat.dart';
 
 //Add this complaint to the database
 final addComplaint=(shelf.Request req) async {
@@ -17,7 +18,7 @@ final addComplaint=(shelf.Request req) async {
     if (location['found'] == false) {
       return shelf.Response.badRequest();
     }
-    DateTime now = DateTime.now().toUtc();
+    DateTime now = DateTime.now();
     int unixTimestampSeconds = now.millisecondsSinceEpoch ~/ 1000;
     //Add a complaint document
     var documentID = await addDocument('complaints', {
@@ -27,13 +28,16 @@ final addComplaint=(shelf.Request req) async {
       'latitude': data['latitude'],
       'longitude': data['longitude'],
       'date': unixTimestampSeconds,
-      'urgency': data['urgency'],
-      'resolved': false
+      'urgency': data['urgency'].toInt(),
+      'resolved': false,
+      'category':data['category'],
+      'time':DateTime.now().millisecondsSinceEpoch
     });
-    var jsonResponse = {'Success': true, 'complaintID': documentID};
+    var jsonResponse = {'Success': true, 'complaintID': documentID,'faq':await getInstructions(data['description'])};
     return shelf.Response.ok(jsonEncode(jsonResponse),
         headers: {'Content-Type': 'application/json'});
   }catch(err){
+    print(err);
     return shelf.Response.internalServerError();
   }
 };
@@ -43,7 +47,7 @@ final resolveComplaint=(shelf.Request req) async {
   try {
     String requestBody = await req.readAsString();
     var data = jsonDecode(requestBody);
-    await updateDocument('complaints', data['complaintID'],{'resolved': true});
+    await updateDocument('complaints', data['complaintID'],{'resolved': true,'resolvedTime':DateTime.now().millisecondsSinceEpoch});
     var jsonResponse = {'Success': true};
     return shelf.Response.ok(jsonEncode(jsonResponse),
         headers: {'Content-Type': 'application/json'});
@@ -184,53 +188,61 @@ final getUserDetails=(shelf.Request req) async {
   }
 };
 
-//[TODO]
-final sos=(shelf.Request request)async{
-  try {
-    String requestBody = await request.readAsString();
-    var data = jsonDecode(requestBody);
+final inbound = (shelf.Request request) async {
+  String requestBody = await request.readAsString();
+
+  // Define the regex patterns for SOS and Add formats
+  RegExp sosPattern = RegExp(r'KumbhSight SOS ([\d.-]+) ([\d.-]+)');
+  RegExp addPattern = RegExp(r'KumbhSight Add (\w+) ([\d.-]+) ([\d.-]+) ([\d.-]+) (\w+) (.*)');
+  if (sosPattern.hasMatch(requestBody)) {
+    var match = sosPattern.firstMatch(requestBody)!;
+    var latitude = double.parse(match.group(1)!);
+    var longitude = double.parse(match.group(2)!);
+    var location = await fetchClosestLocation(
+        {'latitude': latitude, 'longitude': longitude});
+    if (location['found'] == false) {
+      return shelf.Response.badRequest();
+    }
+    await addDocument('sos',{'location':location});
     var jsonResponse = {'Success': true};
     return shelf.Response.ok(jsonEncode(jsonResponse),
         headers: {'Content-Type': 'application/json'});
-  }catch(err){
-    return shelf.Response.internalServerError();
-  }
+  } else if (addPattern.hasMatch(requestBody)) {
+    print(requestBody);
+  var match = addPattern.firstMatch(requestBody)!;
+  var userId = match.group(1)!;
+  var latitude = double.parse(match.group(2)!);
+  var longitude = double.parse(match.group(3)!);
+  var urgency = double.parse(match.group(4)!);
+  var category=match.group(5)!;
+  var description = match.group(6)!;
+    var location = await fetchClosestLocation(
+        {'latitude': latitude, 'longitude': longitude});
+    if (location['found'] == false) {
+      return shelf.Response.badRequest();
+    }
+    DateTime now = DateTime.now().toUtc();
+    int unixTimestampSeconds = now.millisecondsSinceEpoch ~/ 1000;
+    //Add a complaint document
+    var documentID = await addDocument('complaints', {
+      'user': userId,
+      'description': description,
+      'place': location['result'][0],
+      'latitude': latitude,
+      'longitude': longitude,
+      'date': unixTimestampSeconds,
+      'urgency': urgency.toInt(),
+      'resolved': false,
+      'category':category
+    });
+    var jsonResponse = {'Success': true, 'complaintID': documentID};
+    return shelf.Response.ok(jsonEncode(jsonResponse),
+        headers: {'Content-Type': 'application/json'});
+}
+  else{
+  return shelf.Response.internalServerError();
+}
 };
-
-//Handle SMS Requests
-shelf.Middleware checkRequestBodyFormatMiddleware() {
-  return (shelf.Handler innerHandler) {
-    return (shelf.Request request) async {
-      String requestBody = await request.readAsString();
-
-      // Define the regex patterns for SOS and Add formats
-      RegExp sosPattern = RegExp(r'KumbhSight SOS ([\d.-]+) ([\d.-]+)');
-      RegExp addPattern = RegExp(r'KumbhSight Add (\w+) ([\d.-]+) ([\d.-]+) (\w+) (.*)');
-
-      if (sosPattern.hasMatch(requestBody)) {
-        var match = sosPattern.firstMatch(requestBody)!;
-        var latitude = double.parse(match.group(1)!);
-        var longitude = double.parse(match.group(2)!);
-        request = request.change(body: '$requestBody\nLatitude: $latitude, Longitude: $longitude');
-        return sos(request);
-      } else if (addPattern.hasMatch(requestBody)) {
-        var match = addPattern.firstMatch(requestBody)!;
-        var userId = match.group(1)!;
-        var latitude = double.parse(match.group(2)!);
-        var longitude = double.parse(match.group(3)!);
-        var urgency = match.group(4)!;
-        var description = match.group(5)!;
-        request = request.change(body: '$requestBody\nUserId: $userId, Latitude: $latitude, Longitude: $longitude, Urgency: $urgency, Description: $description');
-        return addComplaint(request);
-      }
-      return innerHandler(request);
-    };
-  };
-}
-shelf.Response defaultHandler(shelf.Request request) {
-  return shelf.Response.notFound('Invalid Request');
-}
-final inbound = checkRequestBodyFormatMiddleware()(defaultHandler);
 
 
 //Retrieve all complaints mapped to one location
@@ -288,6 +300,27 @@ final locationPing=(shelf.Request request)async{
     await addToSetWithExpiry(location['result'][0],data['user']);
     var jsonResponse = {'Success': true};
     return shelf.Response.ok(jsonEncode(jsonResponse),
+        headers: {'Content-Type': 'application/json'});
+  }catch(err){
+    print(err);
+    return shelf.Response.internalServerError();
+  }
+};
+
+//Retrieve all complaints from one user
+final viewComplaintsByAdmin=(shelf.Request req) async {
+  try {
+    String requestBody = await req.readAsString();
+    var queryParams = jsonDecode(requestBody);
+    var user=await findDocumentsTwo('users','assignedLocation',queryParams['assignedLocation'],'category',queryParams['category']);
+    var complaints = await findDocumentsTwo(
+        'complaints', 'place',queryParams['location'], 'category',queryParams['category']);
+    print(queryParams['category']);
+    print(complaints);
+    print(queryParams['location']);
+    return shelf.Response.ok(jsonEncode(
+        {'complaints':complaints.map((element) => {...element.map, 'queryID': element.id})
+            .toList().where((e)=>e['resolved']==false).toList(),'user':user.map((element)=>{...element.map,'userID':element.id}).toList()}),
         headers: {'Content-Type': 'application/json'});
   }catch(err){
     print(err);
