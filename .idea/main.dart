@@ -44,34 +44,32 @@ final func=()async{
     'location':locations[entry.key],
     'crowd':entry.value
   }).toList();
-  print(result2);
   return result2;
 };
 
-final accumulateData=()async{
-  List<String> daysOfWeek = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday'
-  ];
-  while(true){
-    /*
-    final data=await func();
-    DateTime now = DateTime.now();
-    String time = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
-    String day = daysOfWeek[now.weekday - 1];
-    final dio=Dio();
-    final calls=data.map((element)=>{...element,'day':day,'time':time});
-    final posts=calls.map((element)=>dio.post('http://localhost:5000/userData',data:element));
-    await Future.wait(posts);
-     */
-    await Future.delayed(Duration(minutes:5));
-  }
-};
+// final accumulateData=()async{
+//   List<String> daysOfWeek = [
+//     'Monday',
+//     'Tuesday',
+//     'Wednesday',
+//     'Thursday',
+//     'Friday',
+//     'Saturday',
+//     'Sunday'
+//   ];
+//   while(true){
+//     // final data=await func();
+//     // DateTime now = DateTime.now();
+//     // String time = '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+//     // String day = daysOfWeek[now.weekday - 1];
+//     // final dio=Dio();
+//     // final calls=data.map((element)=>{...element,'day':day,'time':time});
+//     // print(data);
+//     // final posts=calls.map((element)=>dio.post('https://kumbhmelaml-rbti7rywha-et.a.run.app/userData',data:element));
+//     // await Future.wait(posts);
+//     await Future.delayed(Duration(minutes:5));
+//   }
+// };
 
 final locationDensity=(shelf.Request request) async {
   try {
@@ -110,7 +108,7 @@ void main() async {
   app.post('/getStats',getStats);
   app.post('/getTotalStats',getTotalStats);
   app.post('/predictionsML',predictionsML);
-  accumulateData();
+  //accumulateData();
   var handler = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())
       .addMiddleware(_corsHandler)

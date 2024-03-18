@@ -72,12 +72,10 @@ final getTotalStats=(shelf.Request request)async{
 
 final predictionsML=(shelf.Request request)async{
   try {
-    String requestBody = await request.readAsString();
-    var data = jsonDecode(requestBody);
     final dio=Dio();
-    final posts=await dio.post('https://dc93-2409-40e3-1012-fc2e-1072-a139-b3cb-e61c.ngrok-free.app/predictCrowdAfterHalfHour');
+    final posts=await dio.post('https://kumbhmelaml-rbti7rywha-et.a.run.app/predictCrowdAfterHalfHour');
     print(posts.data);
-    var jsonResponse = {'Success': true,... (await getOverallStats())};
+    Map<String,int> jsonResponse = {... (posts.data)};
     return shelf.Response.ok(jsonEncode(jsonResponse),
         headers: {'Content-Type': 'application/json'});
   }catch(err){

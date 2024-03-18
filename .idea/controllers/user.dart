@@ -27,7 +27,6 @@ final addComplaint=(shelf.Request req) async {
       'place': location['result'][0],
       'latitude': data['latitude'],
       'longitude': data['longitude'],
-      'date': unixTimestampSeconds,
       'urgency': data['urgency'].toInt(),
       'resolved': false,
       'category':data['category'],
@@ -136,9 +135,7 @@ final viewComplaintsForResolverResolved=(shelf.Request req) async {
   try {
     var queryParams = req.url.queryParameters;
     var resolver = await findDocument('users', queryParams['user']!);
-    print(resolver);
     var location = resolver!.map['assignedLocation'];
-    print(location);
     if (location == null) {
       return shelf.Response.badRequest();
     }
@@ -164,7 +161,6 @@ final viewComplaintsForResolverUnResolved=(shelf.Request req) async {
     }
     var complaints = await findDocumentsTwo(
         'complaints', 'place', location, 'resolved', false);
-    print(complaints);
     return shelf.Response.ok(jsonEncode(
         complaints.map((element) => {...element.map, 'queryID': element.id})
             .toList()),
@@ -208,7 +204,6 @@ final inbound = (shelf.Request request) async {
     return shelf.Response.ok(jsonEncode(jsonResponse),
         headers: {'Content-Type': 'application/json'});
   } else if (addPattern.hasMatch(requestBody)) {
-    print(requestBody);
   var match = addPattern.firstMatch(requestBody)!;
   var userId = match.group(1)!;
   var latitude = double.parse(match.group(2)!);
@@ -291,7 +286,6 @@ final locationPing=(shelf.Request request)async{
   try {
     String requestBody = await request.readAsString();
     var data = jsonDecode(requestBody);
-    print(data);
     var location = await fetchClosestLocation(
         {'latitude': data['latitude'], 'longitude': data['longitude']});
     if (location['found'] == false) {
@@ -315,9 +309,6 @@ final viewComplaintsByAdmin=(shelf.Request req) async {
     var user=await findDocumentsTwo('users','assignedLocation',queryParams['assignedLocation'],'category',queryParams['category']);
     var complaints = await findDocumentsTwo(
         'complaints', 'place',queryParams['location'], 'category',queryParams['category']);
-    print(queryParams['category']);
-    print(complaints);
-    print(queryParams['location']);
     return shelf.Response.ok(jsonEncode(
         {'complaints':complaints.map((element) => {...element.map, 'queryID': element.id})
             .toList().where((e)=>e['resolved']==false).toList(),'user':user.map((element)=>{...element.map,'userID':element.id}).toList()}),

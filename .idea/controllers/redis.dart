@@ -17,7 +17,7 @@ final fetchClosestLocation=(Map<String,dynamic>data)async{
     data['latitude'].toString(),
     data['longitude'].toString(),
     'BYRADIUS',
-    '10',
+    '1',
     'km',
     'ASC',
     'COUNT',
@@ -25,6 +25,7 @@ final fetchClosestLocation=(Map<String,dynamic>data)async{
     'WITHCOORD',
     'WITHDIST'
   ]);
+  conn.close();
   if(results.isEmpty)return {'found':false};
   return {'found':true,'result':results[0]};
 };
@@ -34,6 +35,7 @@ final addToSetWithExpiry = (String key, String member) async {
   await response.send_object(["AUTH", "default", 'ZbeBCAUOznqjLFmldQFLO9wtcbqBHjXn']);
   var timestamp = DateTime.now().add(Duration(seconds: 300)).millisecondsSinceEpoch.toString();
   await response.send_object(["ZADD", key, timestamp, member]);
+  conn.close();
 };
 
 final getSetSize = (String key) async {
@@ -65,10 +67,10 @@ final getSetSize = (String key) async {
         .millisecondsSinceEpoch
         .toString()
     ]);
+    conn.close();
     return result;
   }catch(err){
     print(err);
-    print("HERE");
   }
 };
 
